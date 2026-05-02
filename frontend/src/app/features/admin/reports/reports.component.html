@@ -1,0 +1,200 @@
+<!-- ── Page Header ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Reports & Analytics</h1>
+    <p class="page-sub">Track sales performance and customer feedback</p>
+  </div>
+</div>
+
+<!-- ── Tab Pills ──────────────────────────────────────────────────────────── -->
+<div class="tab-bar">
+  <button class="tab-pill" [class.active]="activeTab === 'sales'" (click)="activeTab = 'sales'">
+    <mat-icon>bar_chart</mat-icon> Sales Report
+  </button>
+  <button class="tab-pill" [class.active]="activeTab === 'reviews'" (click)="activeTab = 'reviews'">
+    <mat-icon>star</mat-icon> Customer Reviews
+    <span class="count-badge" *ngIf="reviewTotal > 0">{{ reviewTotal }}</span>
+  </button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     SALES TAB
+════════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="activeTab === 'sales'">
+
+  <!-- Filter Bar -->
+  <div class="filter-card">
+    <div class="filter-left">
+      <mat-icon>tune</mat-icon>
+      <span>Date Range</span>
+    </div>
+    <div class="filter-fields">
+      <div class="date-field">
+        <label>From</label>
+        <div class="input-wrap">
+          <mat-icon>calendar_today</mat-icon>
+          <input type="date" [formControl]="startDate" />
+        </div>
+      </div>
+      <div class="date-field">
+        <label>To</label>
+        <div class="input-wrap">
+          <mat-icon>calendar_today</mat-icon>
+          <input type="date" [formControl]="endDate" />
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button class="gen-btn" (click)="loadReport()">
+          <mat-icon>search</mat-icon> Generate
+        </button>
+        <button class="export-btn" (click)="exportCSV()">
+          <mat-icon>download</mat-icon> Export CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!report">
+    <div class="empty-icon-wrap"><mat-icon>insert_chart_outlined</mat-icon></div>
+    <h3>No report generated</h3>
+    <p>Select a date range and click <strong>Generate</strong> to view the sales report</p>
+  </div>
+
+  <!-- Report Content -->
+  <ng-container *ngIf="report">
+
+    <!-- Stat Cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><mat-icon>receipt_long</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Total Orders</p>
+          <p class="stat-value">{{ report.totalOrders }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><mat-icon>currency_rupee</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Total Revenue</p>
+          <p class="stat-value">₹{{ report.totalRevenue | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><mat-icon>account_balance</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Tax Collected</p>
+          <p class="stat-value">₹{{ report.totalTax | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><mat-icon>trending_up</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Avg. Order Value</p>
+          <p class="stat-value">₹{{ (report.totalOrders > 0 ? report.totalRevenue / report.totalOrders : 0) | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="icon-wrap amber"><mat-icon>emoji_events</mat-icon></div>
+        <div>
+          <p class="section-title">Top Selling Products</p>
+          <p class="section-desc">Ranked by revenue in selected period</p>
+        </div>
+      </div>
+
+      <div class="products-list" *ngIf="report.topProducts?.length > 0; else noProducts">
+        <div class="product-row" *ngFor="let p of report.topProducts; let i = index">
+          <span class="rank" [class.gold]="i===0" [class.silver]="i===1" [class.bronze]="i===2">
+            {{ i + 1 }}
+          </span>
+          <div class="product-info">
+            <p class="product-name">{{ p.name }}</p>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProductPct(p.revenue)"></div>
+            </div>
+          </div>
+          <div class="product-stats">
+            <span class="units">{{ p.quantity }} units</span>
+            <span class="revenue">₹{{ p.revenue | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noProducts>
+        <p class="no-data">No product data for this period</p>
+      </ng-template>
+    </div>
+
+  </ng-container>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     REVIEWS TAB
+════════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="activeTab === 'reviews'">
+
+  <!-- Summary bar -->
+  <div class="review-summary" *ngIf="reviews.length > 0">
+    <div class="rs-item">
+      <p class="rs-value">{{ avgRating | number:'1.1-1' }}</p>
+      <div class="rs-stars">
+        <span class="star" *ngFor="let s of stars(5); let i = index" [class.filled]="i < avgRating">★</span>
+      </div>
+      <p class="rs-label">Avg Rating</p>
+    </div>
+    <div class="rs-divider"></div>
+    <div class="rs-item">
+      <p class="rs-value">{{ reviewTotal }}</p>
+      <p class="rs-label">Total Reviews</p>
+    </div>
+    <div class="rs-divider"></div>
+    <div class="rs-bars">
+      <div class="rating-bar" *ngFor="let r of ratingBreakdown">
+        <span class="rb-label">{{ r.star }}★</span>
+        <div class="rb-track"><div class="rb-fill" [style.width.%]="r.pct"></div></div>
+        <span class="rb-count">{{ r.count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Cards -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="icon-wrap amber"><mat-icon>rate_review</mat-icon></div>
+      <div>
+        <p class="section-title">Customer Reviews</p>
+        <p class="section-desc">{{ reviewTotal }} review{{ reviewTotal !== 1 ? 's' : '' }} total</p>
+      </div>
+    </div>
+
+    <div class="review-list" *ngIf="reviews.length > 0; else noReviews">
+      <div class="review-row" *ngFor="let r of reviews">
+        <div class="reviewer-avatar">{{ r.user.name[0].toUpperCase() }}</div>
+        <div class="review-body">
+          <div class="review-top">
+            <span class="reviewer-name">{{ r.user.name }}</span>
+            <span class="review-product">{{ r.product.name }}</span>
+            <span class="review-date">{{ r.createdAt | date:'dd MMM yyyy' }}</span>
+          </div>
+          <div class="review-stars">
+            <span class="star" *ngFor="let s of stars(5); let i = index" [class.filled]="i < r.rating">★</span>
+          </div>
+          <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+        </div>
+        <button class="delete-btn" (click)="deleteReview(r.id)" title="Delete review">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </div>
+    </div>
+    <ng-template #noReviews><p class="no-data">No reviews yet.</p></ng-template>
+
+    <mat-paginator *ngIf="reviewTotal > reviewLimit"
+      [length]="reviewTotal" [pageSize]="reviewLimit"
+      [pageSizeOptions]="[10,20,50]" (page)="onReviewPage($event)">
+    </mat-paginator>
+  </div>
+
+</div>

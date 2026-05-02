@@ -1,0 +1,79 @@
+<div class="auth-card">
+
+  <!-- Mobile brand header -->
+  <div class="mobile-brand">
+    <mat-icon>factory</mat-icon>
+    <span>Food Factory</span>
+  </div>
+
+  <div class="card-header">
+    <h2>Create account</h2>
+    <p>Join us and start ordering fresh food</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+
+    <div class="field">
+      <label class="field-label">Full Name</label>
+      <div class="input-wrap" [class.error]="form.get('name')?.touched && form.get('name')?.invalid">
+        <mat-icon>person</mat-icon>
+        <input class="field-input" formControlName="name" placeholder="Your full name" />
+      </div>
+      <span class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.hasError('required')">Name is required</span>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Email address</label>
+      <div class="input-wrap" [class.error]="form.get('email')?.touched && form.get('email')?.invalid">
+        <mat-icon>email</mat-icon>
+        <input class="field-input" formControlName="email" type="email" placeholder="you@example.com" />
+      </div>
+      <span class="field-error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">Email is required</span>
+      <span class="field-error" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">Enter a valid email</span>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Phone <span class="optional">(optional)</span></label>
+      <div class="input-wrap">
+        <mat-icon>phone</mat-icon>
+        <input class="field-input" formControlName="phone" placeholder="Your phone number" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Password</label>
+      <div class="input-wrap" [class.error]="form.get('password')?.touched && form.get('password')?.invalid">
+        <mat-icon>lock</mat-icon>
+        <input class="field-input" formControlName="password"
+               [type]="showPass ? 'text' : 'password'" placeholder="Min. 6 characters" />
+        <button type="button" class="eye-btn" (click)="showPass = !showPass">
+          <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
+      <span class="field-error" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('minlength')">Minimum 6 characters</span>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Confirm Password</label>
+      <div class="input-wrap" [class.error]="form.get('confirmPassword')?.touched && form.get('confirmPassword')?.invalid">
+        <mat-icon>lock_outline</mat-icon>
+        <input class="field-input" formControlName="confirmPassword"
+               [type]="showConfirm ? 'text' : 'password'" placeholder="Re-enter your password" />
+        <button type="button" class="eye-btn" (click)="showConfirm = !showConfirm">
+          <mat-icon>{{ showConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
+      <span class="field-error" *ngIf="form.get('confirmPassword')?.touched && form.errors?.['passwordMismatch']">Passwords do not match</span>
+    </div>
+
+    <button class="submit-btn" type="submit" [disabled]="loading || form.invalid" [class.loading]="loading">
+      <span class="spinner" *ngIf="loading"></span>
+      <mat-icon *ngIf="!loading">person_add</mat-icon>
+      {{ loading ? 'Creating account…' : 'Create Account' }}
+    </button>
+
+  </form>
+
+  <p class="switch-link">Already have an account? <a routerLink="/auth/login">Sign in</a></p>
+
+</div>

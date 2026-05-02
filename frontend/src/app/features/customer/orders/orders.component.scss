@@ -1,0 +1,456 @@
+// ── Page Header ───────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-title {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 800;
+  color: #1a237e;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: #9e9e9e;
+  margin: 0;
+}
+
+.order-count {
+  background: #e8eaf6;
+  color: #1a237e;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 50px;
+  align-self: center;
+}
+
+// ── Filter Pills ──────────────────────────────────────────────────────────────
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.pill {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border-radius: 50px;
+  border: 1.5px solid #e0e0e0;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #616161;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+
+  &:hover { border-color: #1a237e; color: #1a237e; }
+
+  &.active {
+    background: #1a237e;
+    border-color: #1a237e;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26,35,126,0.25);
+  }
+}
+
+// ── Empty State ───────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 72px 24px;
+
+  .empty-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+
+    mat-icon { font-size: 40px; width: 40px; height: 40px; color: #1a237e; }
+  }
+
+  h3 { font-size: 18px; font-weight: 700; color: #212121; margin: 0 0 8px; }
+  p  { font-size: 14px; color: #9e9e9e; margin: 0 0 24px; }
+}
+
+.shop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: #1a237e;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.18s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { background: #283593; }
+}
+
+// ── Orders List ───────────────────────────────────────────────────────────────
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+// ── Order Card ────────────────────────────────────────────────────────────────
+.order-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.1); }
+}
+
+// ── Card Header ───────────────────────────────────────────────────────────────
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #f5f5f5;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.order-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-number {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a237e;
+  letter-spacing: 0.3px;
+}
+
+.order-date {
+  font-size: 12px;
+  color: #9e9e9e;
+}
+
+// ── Status Badge ──────────────────────────────────────────────────────────────
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 50px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &.status-pending    { background: #fff3e0; color: #e65100; .status-dot { background: #e65100; } }
+  &.status-processing { background: #e3f2fd; color: #1565c0; .status-dot { background: #1565c0; } }
+  &.status-completed  { background: #e8f5e9; color: #2e7d32; .status-dot { background: #2e7d32; } }
+  &.status-cancelled  { background: #fce4ec; color: #c62828; .status-dot { background: #c62828; } }
+}
+
+// ── Status Stepper ────────────────────────────────────────────────────────────
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  min-width: 64px;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: background 0.2s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: #9e9e9e; }
+
+  .done &, .active & { background: #1a237e; mat-icon { color: #fff; } }
+  .active & { box-shadow: 0 0 0 4px rgba(26,35,126,0.15); }
+}
+
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9e9e9e;
+  margin-top: 6px;
+  text-align: center;
+  white-space: nowrap;
+
+  .done &, .active & { color: #1a237e; }
+}
+
+.step-line {
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 18px);
+  right: calc(-50% + 18px);
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 0;
+
+  .done & { background: #1a237e; }
+}
+
+// ── Items Section ─────────────────────────────────────────────────────────────
+.items-section {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.item-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-qty {
+  font-size: 13px;
+  color: #9e9e9e;
+  flex-shrink: 0;
+}
+
+.item-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424242;
+  flex-shrink: 0;
+}
+
+// ── Card Footer ───────────────────────────────────────────────────────────────
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 14px;
+  border-top: 1px solid #f5f5f5;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #616161;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.tax-line {
+  font-size: 12px;
+  color: #9e9e9e;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.total-label {
+  font-size: 12px;
+  color: #9e9e9e;
+  font-weight: 500;
+}
+
+.total-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a237e;
+  letter-spacing: -0.5px;
+}
+
+.invoice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border: 1.5px solid #1a237e;
+  border-radius: 8px;
+  background: transparent;
+  color: #1a237e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  &:hover { background: #1a237e; color: #fff; }
+}
+
+// ── Address Row ───────────────────────────────────────────────────────────────
+.address-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 10px 20px 14px;
+  font-size: 13px;
+  color: #616161;
+  border-top: 1px dashed #f0f0f0;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: #9e9e9e; flex-shrink: 0; margin-top: 1px; }
+}
+
+// ── Review Section ────────────────────────────────────────────────────────────
+.review-section {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 20px;
+  background: #fafafa;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 12px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.review-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e0e0e0;
+
+  &:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+}
+
+.review-product {
+  font-size: 13px;
+  font-weight: 600;
+  color: #212121;
+  min-width: 100px;
+  flex: 1;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #e0e0e0;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s, transform 0.1s;
+
+  &.filled { color: #ffb300; }
+  &:hover  { transform: scale(1.2); }
+}
+
+.review-input {
+  flex: 1 1 160px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.18s;
+  min-width: 0;
+
+  &:focus { border-color: #1a237e; }
+}
+
+.submit-review-btn {
+  padding: 7px 16px;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  white-space: nowrap;
+
+  &:hover { background: #283593; }
+}
+
+// ── Paginator ─────────────────────────────────────────────────────────────────
+mat-paginator { background: transparent; }

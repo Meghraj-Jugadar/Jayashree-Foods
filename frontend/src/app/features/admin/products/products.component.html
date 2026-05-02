@@ -1,0 +1,196 @@
+<!-- ── Page Header ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Products</h1>
+    <p class="page-sub">{{ total }} product{{ total !== 1 ? 's' : '' }} total</p>
+  </div>
+  <button class="add-btn" (click)="openAdd()">
+    <mat-icon>add</mat-icon> Add Product
+  </button>
+</div>
+
+<!-- ── Top Bar ────────────────────────────────────────────────────────────── -->
+<div class="top-bar">
+  <div class="search-bar" [class.focused]="searchFocused">
+    <mat-icon>search</mat-icon>
+    <input placeholder="Search products…" [(ngModel)]="search" (ngModelChange)="onSearch()"
+           (focus)="searchFocused=true" (blur)="searchFocused=false" />
+    <button class="clear-btn" *ngIf="search" (click)="search=''; onSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="pagination-ctrl">
+    <span class="page-info">{{ pageStart }}–{{ pageEnd }} of {{ total }}</span>
+    <button class="pg-btn" [disabled]="page === 1" (click)="prevPage()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button class="pg-btn" [disabled]="pageEnd >= total" (click)="nextPage()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- ── Product Grid ───────────────────────────────────────────────────────── -->
+<div class="product-grid">
+
+  <div class="product-card" *ngFor="let p of products; let i = index">
+    <div class="card-top-bar" [style.background]="accentColor(i)"></div>
+
+    <!-- Image -->
+    <div class="card-img-wrap">
+      <img [src]="imgSrc(p)" [alt]="p.name" />
+      <span class="stock-badge" [class]="stockClass(p.stock)">{{ stockLabel(p.stock) }}</span>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+      <span class="cat-tag" [style.color]="accentColor(i)" [style.background]="accentBg(i)">
+        {{ p.category.name }}
+      </span>
+      <p class="prod-name">{{ p.name }}</p>
+      <p class="prod-desc">{{ p.description || 'No description provided' }}</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <div class="footer-left">
+        <span class="price">₹{{ p.price | number:'1.2-2' }}</span>
+        <span class="stock-pill" [class]="stockClass(p.stock)">
+          <mat-icon>inventory_2</mat-icon>{{ p.stock }} units
+        </span>
+      </div>
+      <div class="footer-actions">
+        <button class="icon-btn edit" (click)="openEdit(p)" title="Edit">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button class="icon-btn delete" (click)="confirmDelete(p.id)" title="Delete">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="products.length === 0">
+    <div class="empty-icon-wrap"><mat-icon>inventory_2</mat-icon></div>
+    <h3>No products found</h3>
+    <p>Add your first product to get started</p>
+    <button class="add-btn" (click)="openAdd()"><mat-icon>add</mat-icon> Add Product</button>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     ADD / EDIT MODAL
+════════════════════════════════════════════════════════ -->
+<div class="dialog-overlay" *ngIf="showForm" (click)="cancelForm()">
+  <div class="dialog" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="dialog-header">
+      <div class="dialog-header-icon">
+        <mat-icon>{{ editingId ? 'edit' : 'add_circle' }}</mat-icon>
+      </div>
+      <span>{{ editingId ? 'Edit Product' : 'Add New Product' }}</span>
+      <button class="close-btn" (click)="cancelForm()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <!-- Body -->
+    <div class="dialog-body">
+      <form [formGroup]="form" (ngSubmit)="saveProduct()">
+
+        <!-- Image Upload -->
+        <div class="img-upload-wrap">
+          <div class="img-preview" [class.has-img]="imagePreview">
+            <img *ngIf="imagePreview" [src]="imagePreview" alt="Preview" />
+            <div *ngIf="!imagePreview" class="img-placeholder">
+              <mat-icon>add_photo_alternate</mat-icon>
+              <span>Click to upload image</span>
+            </div>
+            <label class="img-overlay" for="fileInput">
+              <mat-icon>photo_camera</mat-icon>
+              <span>Change photo</span>
+            </label>
+          </div>
+          <input id="fileInput" type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+        </div>
+
+        <!-- Fields -->
+        <div class="fields-grid">
+
+          <div class="field span-2">
+            <label class="field-label">Product Name</label>
+            <div class="input-wrap" [class.error]="form.get('name')?.touched && form.get('name')?.invalid">
+              <mat-icon>label</mat-icon>
+              <input class="field-input" formControlName="name" placeholder="e.g. Salted Peanuts" />
+            </div>
+            <span class="field-error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Name is required</span>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Category</label>
+            <div class="select-wrap" [class.error]="form.get('categoryId')?.touched && form.get('categoryId')?.invalid">
+              <mat-icon>category</mat-icon>
+              <select class="field-select" formControlName="categoryId">
+                <option value="" disabled>Select category</option>
+                <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Price (₹)</label>
+            <div class="input-wrap" [class.error]="form.get('price')?.touched && form.get('price')?.invalid">
+              <mat-icon>currency_rupee</mat-icon>
+              <input class="field-input" formControlName="price" type="number" min="0" placeholder="0.00" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Stock</label>
+            <div class="input-wrap" [class.error]="form.get('stock')?.touched && form.get('stock')?.invalid">
+              <mat-icon>inventory_2</mat-icon>
+              <input class="field-input" formControlName="stock" type="number" min="0" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="field span-2">
+            <label class="field-label">Description <span class="optional">(optional)</span></label>
+            <div class="textarea-wrap">
+              <textarea class="field-textarea" formControlName="description" rows="3"
+                        placeholder="Short product description…"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button class="cancel-btn" (click)="cancelForm()">Cancel</button>
+      <button class="save-btn" (click)="saveProduct()" [disabled]="form.invalid">
+        <mat-icon>save</mat-icon> {{ editingId ? 'Update Product' : 'Save Product' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     DELETE CONFIRM DIALOG
+════════════════════════════════════════════════════════ -->
+<div class="dialog-overlay" *ngIf="deleteConfirmId" (click)="cancelDelete()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon-wrap"><mat-icon>delete_forever</mat-icon></div>
+    <p class="confirm-title">Delete Product?</p>
+    <p class="confirm-desc">This will permanently remove the product and cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="cancel-btn" (click)="cancelDelete()">Cancel</button>
+      <button class="delete-confirm-btn" (click)="deleteProduct(deleteConfirmId!)">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </div>
+  </div>
+</div>

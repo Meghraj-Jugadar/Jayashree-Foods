@@ -1,0 +1,141 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+// ─── Reset & Base ────────────────────────────────────────────────────────────
+* { box-sizing: border-box; }
+
+// ─── Material overrides ──────────────────────────────────────────────────────
+.mat-mdc-card { border-radius: 12px !important; }
+
+// ─── Page title ──────────────────────────────────────────────────────────────
+.page-title {
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: #333;
+}
+
+// ─── Status chips ────────────────────────────────────────────────────────────
+.status-pending    { background: #fff3e0 !important; color: #e65100 !important; }
+.status-processing { background: #e3f2fd !important; color: #1565c0 !important; }
+.status-completed  { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.status-cancelled  { background: #fce4ec !important; color: #c62828 !important; }
+
+// ─── Responsive table wrapper ────────────────────────────────────────────────
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ─── Scrollbar ───────────────────────────────────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f4ff;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #42a5f5, #1565c0);
+  border-radius: 10px;
+  border: 1px solid #f0f4ff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #1976d2, #0d47a1);
+}
+
+::-webkit-scrollbar-corner {
+  background: #f0f4ff;
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1976d2 #f0f4ff;
+}
+
+// ─── Utility ─────────────────────────────────────────────────────────────────
+.full-width { width: 100%; }
+.spacer { flex: 1 1 auto; }
+
+// ─── Toast notifications ─────────────────────────────────────────────────────
+.mdc-snackbar {
+  margin-top: 16px !important;
+}
+
+.mdc-snackbar__surface {
+  border-radius: 12px !important;
+  padding: 4px 6px !important;
+  min-width: 280px !important;
+  max-width: 420px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+}
+
+.mdc-snackbar__label {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1px !important;
+  padding: 10px 4px 10px 12px !important;
+}
+
+.mdc-snackbar__actions .mdc-button {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 16px !important;
+  min-width: 36px !important;
+  padding: 0 8px !important;
+}
+
+.toast-success .mdc-snackbar__surface {
+  background: #1b5e20 !important;
+  color: #fff !important;
+  border-left: 4px solid #69f0ae !important;
+}
+
+.toast-error .mdc-snackbar__surface {
+  background: #b71c1c !important;
+  color: #fff !important;
+  border-left: 4px solid #ff5252 !important;
+}
+
+.toast-info .mdc-snackbar__surface {
+  background: #1a237e !important;
+  color: #fff !important;
+  border-left: 4px solid #82b1ff !important;
+}
+
+// ─── Star rating ─────────────────────────────────────────────────────────────
+.star-rating {
+  display: flex;
+  gap: 2px;
+  .star { cursor: pointer; color: #ccc; font-size: 22px; transition: color 0.15s; }
+  .star.filled { color: #f59e0b; }
+  .star.readonly { cursor: default; }
+}

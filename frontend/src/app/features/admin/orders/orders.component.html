@@ -1,0 +1,252 @@
+<!-- ── Page Header ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Orders</h1>
+    <p class="page-sub">{{ total }} order{{ total !== 1 ? 's' : '' }} total</p>
+  </div>
+</div>
+
+<!-- ── Top Bar ────────────────────────────────────────────────────────────── -->
+<div class="top-bar">
+  <div class="left">
+    <!-- Search -->
+    <div class="search-bar" [class.focused]="searchFocused">
+      <mat-icon>search</mat-icon>
+      <input placeholder="Search order number…" [(ngModel)]="search" (ngModelChange)="onSearch()"
+             (focus)="searchFocused=true" (blur)="searchFocused=false" />
+      <button class="clear-btn" *ngIf="search" (click)="search=''; onSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Status pills -->
+    <div class="status-pills">
+      <button class="s-pill" [class.active]="statusFilter === ''" (click)="setStatus('')">All</button>
+      <button class="s-pill" *ngFor="let s of statuses"
+              [class.active]="statusFilter === s"
+              [class]="'s-pill ' + (statusFilter === s ? 'active sp-' + s.toLowerCase() : '')"
+              (click)="setStatus(s)">
+        <mat-icon>{{ statusIcon(s) }}</mat-icon>{{ s | titlecase }}
+      </button>
+    </div>
+  </div>
+
+  <div class="pagination-ctrl">
+    <span class="page-info">{{ pageStart }}–{{ pageEnd }} of {{ total }}</span>
+    <button class="pg-btn" [disabled]="page === 1" (click)="prevPage()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button class="pg-btn" [disabled]="pageEnd >= total" (click)="nextPage()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- ── Orders Table ───────────────────────────────────────────────────────── -->
+<div class="table-card">
+  <div class="table-wrap">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th>Items</th>
+          <th>Amount</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="order-row" *ngFor="let o of orders" (click)="openDetail(o)">
+          <td><span class="order-num">{{ o.orderNumber }}</span></td>
+          <td>
+            <div class="cust-cell">
+              <div class="cust-avatar">{{ o.user.name.charAt(0).toUpperCase() }}</div>
+              <div>
+                <p class="cust-name">{{ o.user.name }}</p>
+                <p class="cust-email">{{ o.user.email }}</p>
+              </div>
+            </div>
+          </td>
+          <td>
+            <p class="date-main">{{ o.createdAt | date:'dd MMM yyyy' }}</p>
+            <p class="date-time">{{ o.createdAt | date:'hh:mm a' }}</p>
+          </td>
+          <td>
+            <span class="items-badge">{{ o.orderItems.length }} item{{ o.orderItems.length !== 1 ? 's' : '' }}</span>
+          </td>
+          <td><span class="amount">₹{{ o.totalAmount | number:'1.2-2' }}</span></td>
+          <td>
+            <span class="pay-badge" [class]="'pay-' + (o.payment?.status || 'pending').toLowerCase()">
+              {{ o.payment?.status || 'Pending' }}
+            </span>
+          </td>
+          <td>
+            <span class="status-pill" [class]="'sp-' + o.status.toLowerCase()">
+              <mat-icon>{{ statusIcon(o.status) }}</mat-icon>
+              {{ o.status | titlecase }}
+            </span>
+          </td>
+          <td>
+            <button class="view-btn" (click)="openDetail(o); $event.stopPropagation()">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="no-data" *ngIf="orders.length === 0">
+      <mat-icon>receipt_long</mat-icon>
+      <p>No orders found</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     ORDER DETAIL DIALOG
+════════════════════════════════════════════════════════ -->
+<div class="dialog-overlay" *ngIf="selectedOrder" (click)="closeDetail()">
+  <div class="order-dialog" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="dialog-header">
+      <div class="dialog-header-left">
+        <div class="header-icon-wrap"><mat-icon>receipt_long</mat-icon></div>
+        <div>
+          <p class="dialog-order-num">{{ selectedOrder.orderNumber }}</p>
+          <p class="dialog-date">{{ selectedOrder.createdAt | date:'dd MMM yyyy, hh:mm a' }}</p>
+        </div>
+      </div>
+      <div class="dialog-header-right">
+        <span class="status-pill lg" [class]="'sp-' + selectedOrder.status.toLowerCase()">
+          <mat-icon>{{ statusIcon(selectedOrder.status) }}</mat-icon>
+          {{ selectedOrder.status | titlecase }}
+        </span>
+        <button class="close-btn" (click)="closeDetail()"><mat-icon>close</mat-icon></button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="dialog-body">
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+
+        <!-- Customer -->
+        <div class="info-card">
+          <p class="info-card-label"><mat-icon>person</mat-icon> Customer</p>
+          <div class="cust-detail">
+            <div class="cust-avatar lg">{{ selectedOrder.user.name.charAt(0).toUpperCase() }}</div>
+            <div>
+              <p class="cust-name-lg">{{ selectedOrder.user.name }}</p>
+              <div class="info-row"><mat-icon>email</mat-icon>{{ selectedOrder.user.email }}</div>
+              <div class="info-row" *ngIf="selectedOrder.user.phone">
+                <mat-icon>phone</mat-icon>{{ selectedOrder.user.phone }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="info-card">
+          <p class="info-card-label"><mat-icon>payment</mat-icon> Payment</p>
+          <ng-container *ngIf="selectedOrder.payment">
+            <div class="pay-row">
+              <span class="pay-key">Method</span>
+              <span class="pay-val">{{ selectedOrder.payment.method }}</span>
+            </div>
+            <div class="pay-row">
+              <span class="pay-key">Status</span>
+              <span class="pay-badge" [class]="'pay-' + selectedOrder.payment.status.toLowerCase()">
+                {{ selectedOrder.payment.status }}
+              </span>
+            </div>
+            <div class="pay-row">
+              <span class="pay-key">Amount</span>
+              <span class="pay-amount">₹{{ selectedOrder.payment.amount | number:'1.2-2' }}</span>
+            </div>
+            <div class="pay-row" *ngIf="selectedOrder.payment.transactionId">
+              <span class="pay-key">Txn ID</span>
+              <span class="pay-txn">{{ selectedOrder.payment.transactionId }}</span>
+            </div>
+          </ng-container>
+          <p class="muted" *ngIf="!selectedOrder.payment">No payment record</p>
+          <div class="notes-row" *ngIf="selectedOrder.notes">
+            <mat-icon>notes</mat-icon><span>{{ selectedOrder.notes }}</span>
+          </div>
+        </div>
+
+        <!-- Update Status -->
+        <div class="info-card">
+          <p class="info-card-label"><mat-icon>edit</mat-icon> Update Status</p>
+          <div class="status-btns">
+            <button class="status-btn" *ngFor="let s of statuses"
+                    [class]="'sb-' + s.toLowerCase()"
+                    [class.active]="selectedOrder.status === s"
+                    (click)="updateStatus(s)">
+              <mat-icon>{{ statusIcon(s) }}</mat-icon>{{ s | titlecase }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Address -->
+      <div class="addr-row">
+        <div class="addr-block billing">
+          <p class="addr-label"><mat-icon>receipt</mat-icon> Billing Address</p>
+          <p class="addr-text" *ngIf="selectedOrder.deliveryAddress">{{ selectedOrder.deliveryAddress }}</p>
+          <p class="muted" *ngIf="!selectedOrder.deliveryAddress">Not available</p>
+        </div>
+        <div class="addr-block delivery">
+          <p class="addr-label"><mat-icon>local_shipping</mat-icon> Delivery Address</p>
+          <p class="addr-text" *ngIf="selectedOrder.deliveryAddress">{{ selectedOrder.deliveryAddress }}</p>
+          <p class="muted" *ngIf="!selectedOrder.deliveryAddress">Not available</p>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="items-section">
+        <p class="info-card-label"><mat-icon>shopping_basket</mat-icon> Order Items</p>
+        <div class="items-list">
+          <div class="item-row" *ngFor="let item of selectedOrder.orderItems; let i = index">
+            <span class="item-idx">{{ i + 1 }}</span>
+            <div class="item-info">
+              <p class="item-name">{{ item.product.name }}</p>
+              <p class="item-cat">{{ item.product.category.name }}</p>
+            </div>
+            <span class="item-qty">× {{ item.quantity }}</span>
+            <span class="item-price">₹{{ item.unitPrice | number:'1.2-2' }}</span>
+            <span class="item-subtotal">₹{{ item.subtotal | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Totals -->
+        <div class="totals-wrap">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>₹{{ (+selectedOrder.totalAmount - +selectedOrder.taxAmount) | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-row">
+            <span>Tax</span>
+            <span>₹{{ selectedOrder.taxAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="total-divider"></div>
+          <div class="total-row grand">
+            <span>Total</span>
+            <span>₹{{ selectedOrder.totalAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="dialog-footer">
+      <button class="close-text-btn" (click)="closeDetail()">Close</button>
+    </div>
+
+  </div>
+</div>

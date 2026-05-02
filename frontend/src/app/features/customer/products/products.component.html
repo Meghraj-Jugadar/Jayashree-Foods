@@ -1,0 +1,73 @@
+<!-- ── Hero Search ─────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Fresh From Our Kitchen</h1>
+    <p class="hero-sub">Handcrafted food products delivered to your door</p>
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input class="search-input" placeholder="Search products…"
+             [(ngModel)]="search" (ngModelChange)="onSearch()" />
+      <button *ngIf="search" class="clear-btn" (click)="search=''; load()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ── Category Pills ─────────────────────────────────────────────────────── -->
+<div class="category-bar">
+  <button class="pill" [class.active]="!categoryId" (click)="setCategory('')">All</button>
+  <button class="pill" *ngFor="let c of categories"
+          [class.active]="categoryId === c.id"
+          (click)="setCategory(c.id)">{{ c.name }}</button>
+</div>
+
+<!-- ── Results meta ───────────────────────────────────────────────────────── -->
+<div class="results-meta" *ngIf="total > 0">
+  <span>{{ total }} product{{ total !== 1 ? 's' : '' }} found</span>
+</div>
+
+<!-- ── Product Grid ───────────────────────────────────────────────────────── -->
+<div class="products-grid" *ngIf="products.length; else empty">
+  <div class="product-card" *ngFor="let p of products">
+    <!-- Image -->
+    <div class="card-img-wrap">
+      <img [src]="p.imageUrl ? apiBase + p.imageUrl : 'assets/no-image.png'" [alt]="p.name" />
+      <span class="badge-category">{{ p.category.name }}</span>
+      <span class="badge-out" *ngIf="p.stock === 0">Out of Stock</span>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+      <h3 class="card-title">{{ p.name }}</h3>
+      <p class="card-desc">{{ p.description }}</p>
+
+      <div class="card-footer">
+        <span class="price">₹{{ p.price | number:'1.2-2' }}</span>
+        <span class="stock-badge" [class.low]="p.stock > 0 && p.stock < 10" *ngIf="p.stock > 0">
+          {{ p.stock < 10 ? 'Only ' + p.stock + ' left' : 'In Stock' }}
+        </span>
+      </div>
+
+      <button class="add-btn" [disabled]="p.stock === 0" (click)="addToCart(p)">
+        <mat-icon>add_shopping_cart</mat-icon>
+        {{ p.stock === 0 ? 'Unavailable' : 'Add to Cart' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Empty State ────────────────────────────────────────────────────────── -->
+<ng-template #empty>
+  <div class="empty-state">
+    <mat-icon>search_off</mat-icon>
+    <p>No products found</p>
+    <button class="pill active" (click)="search=''; categoryId=''; load()">Clear filters</button>
+  </div>
+</ng-template>
+
+<!-- ── Paginator ──────────────────────────────────────────────────────────── -->
+<mat-paginator *ngIf="total > limit"
+  [length]="total" [pageSize]="limit" [pageSizeOptions]="[12,24,48]"
+  (page)="onPage($event)">
+</mat-paginator>

@@ -1,0 +1,149 @@
+<!-- ── Page Header ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Customers</h1>
+    <p class="page-sub">{{ total }} customer{{ total !== 1 ? 's' : '' }} registered</p>
+  </div>
+  <div class="header-stats">
+    <div class="hstat">
+      <span class="hstat-val">{{ activeCount }}</span>
+      <span class="hstat-label">Active</span>
+    </div>
+    <div class="hstat-divider"></div>
+    <div class="hstat">
+      <span class="hstat-val">{{ total - activeCount }}</span>
+      <span class="hstat-label">Inactive</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Top Bar ────────────────────────────────────────────────────────────── -->
+<div class="top-bar">
+  <div class="search-bar" [class.focused]="searchFocused">
+    <mat-icon>search</mat-icon>
+    <input placeholder="Search by name or email…"
+           [(ngModel)]="search" (ngModelChange)="onSearch()"
+           (focus)="searchFocused=true" (blur)="searchFocused=false" />
+    <button class="clear-btn" *ngIf="search" (click)="search=''; load()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="pagination-ctrl">
+    <span class="page-info">{{ pageStart }}–{{ pageEnd }} of {{ total }}</span>
+    <button class="pg-btn" [disabled]="page === 1" (click)="prevPage()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button class="pg-btn" [disabled]="pageEnd >= total" (click)="nextPage()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- ── Main Layout ────────────────────────────────────────────────────────── -->
+<div class="card-grid">
+  <div class="customer-card" *ngFor="let u of users"
+       [class.selected]="selected?.id === u.id"
+       [class.inactive]="!u.isActive"
+       (click)="select(u)">
+    <div class="card-avatar" [class.inactive]="!u.isActive">{{ initials(u.name) }}</div>
+    <div class="card-body">
+      <p class="card-name">{{ u.name }}</p>
+      <p class="card-email">{{ u.email }}</p>
+      <p class="card-phone" *ngIf="u.phone">
+        <mat-icon>phone</mat-icon>{{ u.phone }}
+      </p>
+    </div>
+    <span class="status-dot" [class.active]="u.isActive" [title]="u.isActive ? 'Active' : 'Inactive'"></span>
+  </div>
+
+  <div class="no-data" *ngIf="users.length === 0">
+    <mat-icon>person_search</mat-icon>
+    <p>No customers found</p>
+  </div>
+</div>
+
+<!-- ── Detail Dialog ─────────────────────────────────────────────────────── -->
+<div class="dialog-overlay" *ngIf="selected" (click)="selected = null">
+  <div class="dialog" (click)="$event.stopPropagation()">
+
+    <!-- Dialog Header -->
+    <div class="panel-header">
+      <div class="panel-avatar">{{ initials(selected.name) }}</div>
+      <div class="panel-name-block">
+        <p class="panel-name">{{ selected.name }}</p>
+        <span class="status-badge" [class.active]="selected.isActive">
+          <span class="status-dot-sm"></span>
+          {{ selected.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+      <button class="close-btn" (click)="selected = null">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Dialog Body -->
+    <div class="panel-body">
+
+      <!-- Contact Info -->
+      <div class="info-section">
+        <p class="info-section-label">Contact Info</p>
+        <div class="info-row">
+          <div class="info-icon-wrap blue"><mat-icon>email</mat-icon></div>
+          <div>
+            <p class="info-sub">Email</p>
+            <p class="info-val">{{ selected.email }}</p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon-wrap green"><mat-icon>phone</mat-icon></div>
+          <div>
+            <p class="info-sub">Phone</p>
+            <p class="info-val" [class.muted]="!selected.phone">
+              {{ selected.phone || 'Not provided' }}
+            </p>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon-wrap amber"><mat-icon>calendar_today</mat-icon></div>
+          <div>
+            <p class="info-sub">Member Since</p>
+            <p class="info-val">{{ selected.createdAt | date:'dd MMM yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="info-section">
+        <p class="info-section-label">Default Address</p>
+        <ng-container *ngIf="selected.addresses && selected.addresses.length > 0; else noAddr">
+          <div class="addr-card">
+            <p class="addr-name">{{ selected.addresses[0].fullName }}</p>
+            <p class="addr-line">{{ selected.addresses[0].line1 }}<span *ngIf="selected.addresses[0].line2">, {{ selected.addresses[0].line2 }}</span></p>
+            <p class="addr-line">{{ selected.addresses[0].city }}, {{ selected.addresses[0].state }} – {{ selected.addresses[0].pincode }}</p>
+            <p class="addr-phone"><mat-icon>phone</mat-icon>{{ selected.addresses[0].phone }}</p>
+          </div>
+        </ng-container>
+        <ng-template #noAddr>
+          <div class="no-addr">
+            <mat-icon>location_off</mat-icon>
+            <span>No address saved</span>
+          </div>
+        </ng-template>
+      </div>
+
+    </div>
+
+    <!-- Dialog Footer -->
+    <div class="panel-footer">
+      <button class="close-text-btn" (click)="selected = null">Close</button>
+      <button class="toggle-btn"
+              [class.deactivate]="selected.isActive"
+              (click)="toggleStatus(selected)">
+        <mat-icon>{{ selected.isActive ? 'block' : 'check_circle' }}</mat-icon>
+        {{ selected.isActive ? 'Deactivate' : 'Activate' }}
+      </button>
+    </div>
+
+  </div>
+</div>

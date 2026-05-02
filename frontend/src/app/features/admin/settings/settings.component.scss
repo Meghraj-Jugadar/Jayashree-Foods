@@ -1,0 +1,277 @@
+// ── Page Header ───────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 800;
+  color: #1a237e;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: #9e9e9e;
+  margin: 0;
+}
+
+// ── Save Button ───────────────────────────────────────────────────────────────
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 22px;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) { background: #283593; transform: scale(1.01); }
+  &:disabled { background: #e0e0e0; color: #9e9e9e; cursor: not-allowed; transform: none; }
+  &.loading { opacity: 0.85; }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.settings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Section Card ──────────────────────────────────────────────────────────────
+.section-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  background: #fafafa;
+}
+
+.icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &.blue  { background: #e8eaf6; mat-icon { color: #1a237e; } }
+  &.green { background: #e8f5e9; mat-icon { color: #2e7d32; } }
+  &.amber { background: #fff8e1; mat-icon { color: #f57f17; } }
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #212121;
+  margin: 0 0 2px;
+}
+
+.section-desc {
+  font-size: 12px;
+  color: #9e9e9e;
+  margin: 0;
+}
+
+.section-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Fields ────────────────────────────────────────────────────────────────────
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #616161;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.optional {
+  font-size: 10px;
+  font-weight: 400;
+  color: #bdbdbd;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 46px;
+  background: #fafafa;
+  transition: border-color 0.18s, background 0.18s;
+
+  mat-icon { font-size: 17px; width: 17px; height: 17px; color: #9e9e9e; flex-shrink: 0; }
+
+  &:focus-within {
+    border-color: #1a237e;
+    background: #fff;
+    mat-icon { color: #1a237e; }
+  }
+}
+
+.field-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #212121;
+  background: transparent;
+  min-width: 0;
+
+  &::placeholder { color: #bdbdbd; }
+
+  // hide number spinners
+  &[type=number]::-webkit-inner-spin-button,
+  &[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  &[type=number] { -moz-appearance: textfield; }
+}
+
+// ── Tax Preview ───────────────────────────────────────────────────────────────
+.tax-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tax-preview {
+  flex: 1;
+  background: linear-gradient(135deg, #e8eaf6, #f0f2ff);
+  border: 1px solid #c5cae9;
+  border-radius: 12px;
+  padding: 12px 16px;
+
+  p { margin: 0; }
+}
+
+.tp-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #7986cb;
+  margin-bottom: 4px !important;
+}
+
+.tp-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a237e;
+  margin-bottom: 2px !important;
+}
+
+.tp-total {
+  font-size: 12px;
+  color: #5c6bc0;
+  font-weight: 500;
+}
+
+// ── Address Preview Card ──────────────────────────────────────────────────────
+.preview-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  padding: 16px 20px;
+  border-left: 4px solid #ffb300;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #f57f17;
+  margin-bottom: 12px;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.preview-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a237e;
+  margin: 0 0 6px;
+}
+
+.preview-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #616161;
+  margin: 3px 0;
+
+  mat-icon { font-size: 13px; width: 13px; height: 13px; color: #9e9e9e; }
+}

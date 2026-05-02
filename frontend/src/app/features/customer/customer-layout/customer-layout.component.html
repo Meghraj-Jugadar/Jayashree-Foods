@@ -1,0 +1,81 @@
+<mat-toolbar color="primary" class="toolbar">
+  <!-- Brand -->
+  <span class="brand">
+    <mat-icon>factory</mat-icon>
+    <span class="brand-text">Food Factory</span>
+  </span>
+
+  <span class="spacer"></span>
+
+  <!-- Desktop nav links -->
+  <nav class="desktop-nav">
+    <a mat-button routerLink="/customer/products" routerLinkActive="active-nav">
+      <mat-icon>store</mat-icon> Products
+    </a>
+    <a mat-button routerLink="/customer/orders" routerLinkActive="active-nav">
+      <mat-icon>receipt</mat-icon> Orders
+    </a>
+    <a mat-button routerLink="/customer/cart" routerLinkActive="active-nav"
+       [matBadge]="cart.cartCount() > 0 ? cart.cartCount() : null" matBadgeColor="warn" matBadgeOverlap="false">
+      <mat-icon>shopping_cart</mat-icon> Cart
+    </a>
+    <button class="user-avatar-btn" [matMenuTriggerFor]="userMenu">
+      <div class="nav-avatar">{{ initials }}</div>
+      <span class="user-name">{{ auth.currentUser()?.name }}</span>
+      <mat-icon class="chevron">expand_more</mat-icon>
+    </button>
+  </nav>
+
+  <!-- Mobile: cart icon + hamburger -->
+  <div class="mobile-nav">
+    <a mat-icon-button routerLink="/customer/cart" aria-label="Cart"
+       [matBadge]="cart.cartCount() > 0 ? cart.cartCount() : null" matBadgeColor="warn">
+      <mat-icon>shopping_cart</mat-icon>
+    </a>
+    <button mat-icon-button [matMenuTriggerFor]="mobileMenu" aria-label="Menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </div>
+
+  <!-- Desktop user menu -->
+  <mat-menu #userMenu class="user-dropdown">
+    <div class="menu-user-info" mat-menu-item disabled>
+      <div class="menu-avatar">{{ initials }}</div>
+      <div>
+        <p class="menu-name">{{ auth.currentUser()?.name }}</p>
+        <p class="menu-email">{{ auth.currentUser()?.email }}</p>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <a mat-menu-item routerLink="/customer/profile" routerLinkActive="menu-active">
+      <mat-icon>person</mat-icon> My Profile
+    </a>
+    <a mat-menu-item routerLink="/customer/orders" routerLinkActive="menu-active">
+      <mat-icon>receipt_long</mat-icon> My Orders
+    </a>
+    <mat-divider></mat-divider>
+    <button mat-menu-item class="logout-item" (click)="auth.logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
+  </mat-menu>
+
+  <!-- Mobile full menu -->
+  <mat-menu #mobileMenu>
+    <a mat-menu-item routerLink="/customer/products">
+      <mat-icon>store</mat-icon> Products
+    </a>
+    <a mat-menu-item routerLink="/customer/orders">
+      <mat-icon>receipt</mat-icon> My Orders
+    </a>
+    <a mat-menu-item routerLink="/customer/profile">
+      <mat-icon>person</mat-icon> Profile
+    </a>
+    <button mat-menu-item (click)="auth.logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<div class="content">
+  <router-outlet />
+</div>

@@ -1,0 +1,171 @@
+<!-- ── Page Header ─────────────────────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Settings</h1>
+    <p class="page-sub">Manage factory information, address and tax configuration</p>
+  </div>
+  <button class="save-btn" type="button" (click)="save()" [disabled]="saving" [class.loading]="saving">
+    <span class="spinner" *ngIf="saving"></span>
+    <mat-icon *ngIf="!saving">save</mat-icon>
+    {{ saving ? 'Saving…' : 'Save Settings' }}
+  </button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="save()" class="settings-layout">
+
+  <!-- ── Left Column ──────────────────────────────────────────────────────── -->
+  <div class="col">
+
+    <!-- Factory Details -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="icon-wrap blue"><mat-icon>factory</mat-icon></div>
+        <div>
+          <p class="section-title">Factory Details</p>
+          <p class="section-desc">Basic information about your business</p>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label class="field-label">Factory Name</label>
+          <div class="input-wrap">
+            <mat-icon>factory</mat-icon>
+            <input class="field-input" formControlName="factory_name" placeholder="e.g. Food Factory Co." />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label class="field-label">Phone</label>
+            <div class="input-wrap">
+              <mat-icon>phone</mat-icon>
+              <input class="field-input" formControlName="factory_phone" placeholder="+91 XXXXX XXXXX" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Currency</label>
+            <div class="input-wrap">
+              <mat-icon>currency_exchange</mat-icon>
+              <input class="field-input" formControlName="currency" placeholder="INR" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Email</label>
+          <div class="input-wrap">
+            <mat-icon>email</mat-icon>
+            <input class="field-input" formControlName="factory_email" type="email" placeholder="contact@factory.com" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tax Configuration -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="icon-wrap green"><mat-icon>percent</mat-icon></div>
+        <div>
+          <p class="section-title">Tax Configuration</p>
+          <p class="section-desc">Applied to all customer orders</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="tax-row">
+          <div class="field" style="flex:0 0 160px">
+            <label class="field-label">Tax Rate (%)</label>
+            <div class="input-wrap">
+              <mat-icon>percent</mat-icon>
+              <input class="field-input" formControlName="tax_rate" type="number" min="0" max="100" placeholder="18" />
+            </div>
+          </div>
+          <div class="tax-preview">
+            <p class="tp-label">On ₹1,000 order</p>
+            <p class="tp-value">Tax = ₹{{ (form.get('tax_rate')?.value || 0) * 10 | number:'1.0-0' }}</p>
+            <p class="tp-total">Total = ₹{{ 1000 + (form.get('tax_rate')?.value || 0) * 10 | number:'1.0-0' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right Column ─────────────────────────────────────────────────────── -->
+  <div class="col">
+
+    <!-- Factory Address -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="icon-wrap amber"><mat-icon>location_on</mat-icon></div>
+        <div>
+          <p class="section-title">Factory Address</p>
+          <p class="section-desc">Printed on invoices and receipts</p>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="field">
+          <label class="field-label">Address Line 1</label>
+          <div class="input-wrap">
+            <mat-icon>edit_location</mat-icon>
+            <input class="field-input" formControlName="factory_line1" placeholder="Building No, Street, Area" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Address Line 2 <span class="optional">(optional)</span></label>
+          <div class="input-wrap">
+            <mat-icon>add_road</mat-icon>
+            <input class="field-input" formControlName="factory_line2" placeholder="Landmark, Colony" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label class="field-label">City</label>
+            <div class="input-wrap">
+              <mat-icon>location_city</mat-icon>
+              <input class="field-input" formControlName="factory_city" placeholder="City" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">State</label>
+            <div class="input-wrap">
+              <mat-icon>map</mat-icon>
+              <input class="field-input" formControlName="factory_state" placeholder="State" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="max-width:180px">
+          <label class="field-label">Pincode</label>
+          <div class="input-wrap">
+            <mat-icon>pin</mat-icon>
+            <input class="field-input" formControlName="factory_pincode" placeholder="6-digit pincode" maxlength="6" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Address Preview -->
+    <div class="preview-card" *ngIf="addressPreview">
+      <div class="preview-header">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Invoice Address Preview</span>
+      </div>
+      <p class="preview-name">{{ form.get('factory_name')?.value || 'Factory Name' }}</p>
+      <p class="preview-line">{{ addressPreview }}</p>
+      <p class="preview-line" *ngIf="form.get('factory_phone')?.value">
+        <mat-icon>phone</mat-icon> {{ form.get('factory_phone')?.value }}
+      </p>
+      <p class="preview-line" *ngIf="form.get('factory_email')?.value">
+        <mat-icon>email</mat-icon> {{ form.get('factory_email')?.value }}
+      </p>
+    </div>
+
+  </div>
+
+</form>

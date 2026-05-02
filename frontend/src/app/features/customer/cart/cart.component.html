@@ -1,0 +1,167 @@
+<!-- ── Empty State ─────────────────────────────────────────────────────────── -->
+<div class="empty-state" *ngIf="cart.cartItems().length === 0">
+  <div class="empty-icon-wrap">
+    <mat-icon>shopping_cart</mat-icon>
+  </div>
+  <h3>Your cart is empty</h3>
+  <p>Looks like you haven't added anything yet.</p>
+  <a class="browse-btn" routerLink="/customer/products">
+    <mat-icon>store</mat-icon> Browse Products
+  </a>
+</div>
+
+<!-- ── Cart Layout ────────────────────────────────────────────────────────── -->
+<div class="cart-layout" *ngIf="cart.cartItems().length > 0">
+
+  <!-- ── Left Column ──────────────────────────────────────────────────────── -->
+  <div class="left-col">
+
+    <!-- Delivery Address -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <mat-icon>location_on</mat-icon>
+          <span>Delivery Address</span>
+        </div>
+        <a class="manage-link" routerLink="/customer/profile">
+          <mat-icon>add</mat-icon> Manage
+        </a>
+      </div>
+
+      <div class="no-address" *ngIf="addresses.length === 0">
+        <mat-icon>location_off</mat-icon>
+        <span>No saved addresses. <a routerLink="/customer/profile">Add one in your profile</a> to continue.</span>
+      </div>
+
+      <div class="address-list" *ngIf="addresses.length > 0">
+        <div class="addr-card" *ngFor="let addr of addresses"
+             [class.selected]="selectedAddressId === addr.id"
+             (click)="selectedAddressId = addr.id">
+          <div class="addr-radio">
+            <span class="radio-dot" [class.active]="selectedAddressId === addr.id"></span>
+          </div>
+          <div class="addr-body">
+            <div class="addr-top">
+              <span class="addr-label">
+                <mat-icon>{{ addr.label === 'Home' ? 'home' : addr.label === 'Work' ? 'work' : 'location_on' }}</mat-icon>
+                {{ addr.label }}
+              </span>
+              <span class="default-badge" *ngIf="addr.isDefault">Default</span>
+            </div>
+            <p class="addr-name">{{ addr.fullName }}</p>
+            <p class="addr-line">{{ addr.line1 }}<span *ngIf="addr.line2">, {{ addr.line2 }}</span></p>
+            <p class="addr-line">{{ addr.city }}, {{ addr.state }} – {{ addr.pincode }}</p>
+            <p class="addr-phone"><mat-icon>phone</mat-icon>{{ addr.phone }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Items -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <mat-icon>shopping_basket</mat-icon>
+          <span>Cart Items <span class="count-badge">{{ cart.cartItems().length }}</span></span>
+        </div>
+        <button class="clear-btn" (click)="cart.clearCart()">Clear all</button>
+      </div>
+
+      <div class="item-list">
+        <div class="item-row" *ngFor="let item of cart.cartItems()">
+          <div class="item-img">
+            <img [src]="item.product.imageUrl ? apiBase + item.product.imageUrl : 'assets/no-image.png'"
+                 [alt]="item.product.name" />
+          </div>
+          <div class="item-info">
+            <p class="item-name">{{ item.product.name }}</p>
+            <p class="item-unit-price">₹{{ item.product.price | number:'1.2-2' }} each</p>
+          </div>
+          <div class="qty-control">
+            <button class="qty-btn" (click)="cart.updateQuantity(item.product.id, item.quantity - 1)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="qty-val">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="cart.updateQuantity(item.product.id, item.quantity + 1)"
+                    [disabled]="item.quantity >= item.product.stock">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <div class="item-subtotal">₹{{ (item.product.price * item.quantity) | number:'1.2-2' }}</div>
+          <button class="remove-btn" (click)="cart.removeFromCart(item.product.id)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Order Summary ────────────────────────────────────────────────────── -->
+  <div class="summary-card">
+    <h3 class="summary-title">Order Summary</h3>
+
+    <!-- Delivery preview -->
+    <div class="delivery-preview" *ngIf="selectedAddress">
+      <mat-icon>location_on</mat-icon>
+      <div>
+        <p class="dp-label">Delivering to</p>
+        <p class="dp-name">{{ selectedAddress.fullName }}</p>
+        <p class="dp-addr">{{ selectedAddress.line1 }}, {{ selectedAddress.city }} – {{ selectedAddress.pincode }}</p>
+      </div>
+    </div>
+    <div class="no-addr-hint" *ngIf="!selectedAddressId && addresses.length > 0">
+      <mat-icon>info</mat-icon> Select a delivery address
+    </div>
+
+    <!-- Totals -->
+    <div class="summary-rows">
+      <div class="s-row">
+        <span>Subtotal ({{ cart.cartItems().length }} item{{ cart.cartItems().length !== 1 ? 's' : '' }})</span>
+        <span>₹{{ cart.cartTotal() | number:'1.2-2' }}</span>
+      </div>
+      <div class="s-row">
+        <span>Tax (18%)</span>
+        <span>₹{{ cart.cartTotal() * 0.18 | number:'1.2-2' }}</span>
+      </div>
+      <div class="s-row free-row">
+        <span>Delivery</span>
+        <span class="free-tag">FREE</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="total-row">
+      <span>Total</span>
+      <span class="total-amt">₹{{ cart.cartTotal() * 1.18 | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Payment method -->
+    <div class="field-group">
+      <label class="field-label">Payment Method</label>
+      <div class="payment-options">
+        <button class="pay-opt" *ngFor="let p of paymentOptions"
+                [class.active]="paymentMethod === p.value"
+                (click)="paymentMethod = p.value">
+          <mat-icon>{{ p.icon }}</mat-icon>
+          {{ p.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="field-group">
+      <label class="field-label">Order Notes <span class="optional">(optional)</span></label>
+      <textarea class="notes-input" [(ngModel)]="notes" rows="2" placeholder="Any special instructions…"></textarea>
+    </div>
+
+    <!-- Place Order -->
+    <button class="checkout-btn" (click)="placeOrder()"
+            [disabled]="placing || !selectedAddressId" [class.loading]="placing">
+      <mat-icon>{{ placing ? 'hourglass_empty' : 'shopping_bag' }}</mat-icon>
+      {{ placing ? 'Placing Order…' : 'Place Order' }}
+    </button>
+  </div>
+
+</div>

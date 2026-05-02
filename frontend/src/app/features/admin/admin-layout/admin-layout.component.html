@@ -1,0 +1,121 @@
+<mat-sidenav-container class="sidenav-container">
+
+  <!-- ── Sidenav ──────────────────────────────────────────────────────────── -->
+  <mat-sidenav
+    #sidenav
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpen()"
+    class="sidenav"
+    (closedStart)="sidenavOpen.set(false)">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo"><mat-icon>factory</mat-icon></div>
+      <div class="brand-info">
+        <span class="brand-name">Food Factory</span>
+        <span class="brand-tag">Admin Panel</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="nav-list">
+      <p class="nav-section-label">Main</p>
+
+      <a class="nav-item" routerLink="/admin/dashboard" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>dashboard</mat-icon></div>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/orders" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>receipt_long</mat-icon></div>
+        <span>Orders</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/products" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>inventory_2</mat-icon></div>
+        <span>Products</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/categories" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>category</mat-icon></div>
+        <span>Categories</span>
+      </a>
+
+      <p class="nav-section-label">Management</p>
+
+      <a class="nav-item" routerLink="/admin/customers" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>people</mat-icon></div>
+        <span>Customers</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/reports" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>bar_chart</mat-icon></div>
+        <span>Reports</span>
+      </a>
+      <a class="nav-item" routerLink="/admin/settings" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><mat-icon>settings</mat-icon></div>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <!-- Sidenav Footer -->
+    <div class="sidenav-footer">
+      <div class="footer-user">
+        <div class="footer-avatar">{{ initials }}</div>
+        <div class="footer-info">
+          <p class="footer-name">{{ auth.currentUser()?.name }}</p>
+          <p class="footer-role">Administrator</p>
+        </div>
+      </div>
+      <button class="footer-logout" (click)="auth.logout()" title="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+
+  </mat-sidenav>
+
+  <!-- ── Main Content ──────────────────────────────────────────────────────── -->
+  <mat-sidenav-content>
+
+    <!-- Toolbar -->
+    <mat-toolbar class="toolbar">
+      <button class="menu-btn" (click)="toggleSidenav()" aria-label="Toggle menu">
+        <mat-icon>{{ sidenavOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+
+      <span class="toolbar-title">Admin Panel</span>
+      <span class="spacer"></span>
+
+      <!-- User avatar button -->
+      <button class="user-avatar-btn" [matMenuTriggerFor]="userMenu">
+        <div class="toolbar-avatar">{{ initials }}</div>
+        <span class="user-name">{{ auth.currentUser()?.name }}</span>
+        <mat-icon class="chevron">expand_more</mat-icon>
+      </button>
+
+      <!-- Dropdown menu -->
+      <mat-menu #userMenu="matMenu" class="user-dropdown">
+        <!-- User info header -->
+        <div class="menu-user-info" (click)="$event.stopPropagation()">
+          <div class="menu-avatar">{{ initials }}</div>
+          <div>
+            <p class="menu-name">{{ auth.currentUser()?.name }}</p>
+            <p class="menu-email">{{ auth.currentUser()?.email }}</p>
+          </div>
+        </div>
+        <div class="menu-divider"></div>
+        <button mat-menu-item class="menu-item" disabled>
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Administrator</span>
+        </button>
+        <div class="menu-divider"></div>
+        <button mat-menu-item class="menu-item logout-item" (click)="auth.logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <router-outlet />
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
