@@ -1,8 +1,8 @@
 node_modules/
 dist/
 .env
+.env.local
 logs/
 uploads/
-prisma/migrations/dev.db
 *.db
 *.db-journal
