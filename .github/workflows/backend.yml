@@ -11,8 +11,8 @@ on:
       - 'backend/**'
 
 jobs:
-  build:
-    name: Build & Migrate
+  build-and-deploy:
+    name: Build, Migrate & Deploy to Render
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,3 +42,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Trigger Render deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: curl -s "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
